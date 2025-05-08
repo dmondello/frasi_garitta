@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - Citazioni in Attesa</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    
+    .container {
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1, h2 {
+      color: #333;
+      margin-bottom: 1.5rem;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .logout {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    
+    .quote-card {
+      background: #f9f9f9;
+      border-radius: 6px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #3498db;
+    }
+    
+    .quote-info {
+      margin-bottom: 1rem;
+    }
+    
+    .quote-info span {
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+    
+    .quote-text {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      font-style: italic;
+      color: #333;
+    }
+    
+    .quote-actions {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .btn-approve {
+      background: #2ecc71;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .btn-reject {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .no-quotes {
+      text-align: center;
+      color: #777;
+      padding: 3rem 0;
+      font-style: italic;
+    }
+    
+    .verified {
+      color: #2ecc71;
+      font-weight: bold;
+    }
+    
+    .not-verified {
+      color: #e74c3c;
+      font-weight: bold;
+    }
+    
+    /* Stili per la sezione manutenzione */
+    .maintenance-section {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid #ddd;
+    }
+    
+    .maintenance-status {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+    }
+    
+    .status-active {
+      background: #e74c3c;
+      color: white;
+    }
+    
+    .status-inactive {
+      background: #2ecc71;
+      color: white;
+    }
+    
+    .maintenance-controls {
+      background: #f9f9f9;
+      border-radius: 6px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .maintenance-form {
+      margin-top: 1rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+    
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    .btn-enable {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    
+    .btn-disable {
+      background: #2ecc71;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Dashboard Amministrazione</h1>
+      <a href="/admin/logout" class="logout">Logout</a>
+    </div>
+    
+    <!-- Sezione Modalità Manutenzione -->
+    <div class="maintenance-section">
+      <h2>Modalità Manutenzione</h2>
+      
+      <div class="maintenance-status {% if maintenance_mode %}status-active{% else %}status-inactive{% endif %}">
+        Stato: {% if maintenance_mode %}Attiva{% else %}Disattivata{% endif %}
+      </div>
+      
+      <div class="maintenance-controls">
+        {% if maintenance_mode %}
+          <p>Il sito è attualmente in modalità manutenzione con il messaggio:</p>
+          <p><em>"{{ maintenance_message }}"</em></p>
+          
+          <form method="post" action="/admin/toggle_maintenance" class="maintenance-form">
+            <input type="hidden" name="action" value="disable">
+            <button type="submit" class="btn-disable">Disattiva Modalità Manutenzione</button>
+          </form>
+        {% else %}
+          <form method="post" action="/admin/toggle_maintenance" class="maintenance-form">
+            <input type="hidden" name="action" value="enable">
+            
+            <div class="form-group">
+              <label for="message">Messaggio di manutenzione:</label>
+              <textarea id="message" name="message" rows="3">{{ maintenance_message }}</textarea>
+            </div>
+            
+            <button type="submit" class="btn-enable">Attiva Modalità Manutenzione</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Sezione Citazioni -->
+    <h2>Citazioni in Attesa di Approvazione</h2>
+    
+    {% if quotes %}
+      {% for quote in quotes %}
+      <div class="quote-card">
+        <div class="quote-info">
+          <span>Autore:</span> {{ quote.nome_completo }}
+        </div>
+        <div class="quote-info">
+          <span>Email:</span> {{ quote.email }} 
+          {% if quote.email_checked %}
+          <span class="verified">(Email verificata)</span>
+          {% else %}
+          <span class="not-verified">(Email non verificata)</span>
+          {% endif %}
+        </div>
+        <div class="quote-text">
+          "{{ quote.frase }}"
+        </div>
+        <div class="quote-actions">
+          <form method="post" action="/admin/approve/{{ quote.id }}">
+            <button type="submit" class="btn-approve">Approva</button>
+          </form>
+          <form method="post" action="/admin/reject/{{ quote.id }}">
+            <button type="submit" class="btn-reject">Rifiuta</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="no-quotes">
+      Non ci sono citazioni in attesa di approvazione.
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>

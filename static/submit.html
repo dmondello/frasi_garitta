@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Invia una Citazione</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    
+    .container {
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 2rem;
+      width: 100%;
+      max-width: 600px;
+    }
+    
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      color: #555;
+    }
+    
+    input, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+    
+    button {
+      background: #333;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      display: block;
+      margin: 0 auto;
+      transition: background 0.3s;
+    }
+    
+    button:hover {
+      background: #555;
+    }
+    
+    .error {
+      color: #e74c3c;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .success {
+      text-align: center;
+      color: #2ecc71;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    #footer {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    
+    #footer a {
+      color: #555;
+      text-decoration: none;
+    }
+    
+    #footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Invia una Citazione</h1>
+    
+    <form id="quote-form">
+      <div class="form-group">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" required>
+        <div class="error" id="nome-error"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="cognome">Cognome</label>
+        <input type="text" id="cognome" name="cognome" required>
+        <div class="error" id="cognome-error"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+        <div class="error" id="email-error"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="frase">La tua citazione</label>
+        <textarea id="frase" name="frase" required></textarea>
+        <div class="error" id="frase-error"></div>
+      </div>
+      
+      <button type="submit">Invia</button>
+    </form>
+    
+    <div id="response-message" class="hidden"></div>
+  </div>
+  
+  <div id="footer">
+    <a href="/">Torna alla pagina principale</a>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('quote-form');
+      const responseMessage = document.getElementById('response-message');
+      
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Reset error messages
+        document.querySelectorAll('.error').forEach(el => el.textContent = '');
+        
+        // Basic validation
+        let hasError = false;
+        const nome = document.getElementById('nome').value.trim();
+        const cognome = document.getElementById('cognome').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const frase = document.getElementById('frase').value.trim();
+        
+        if (!nome) {
+          document.getElementById('nome-error').textContent = 'Il nome è obbligatorio';
+          hasError = true;
+        }
+        
+        if (!cognome) {
+          document.getElementById('cognome-error').textContent = 'Il cognome è obbligatorio';
+          hasError = true;
+        }
+        
+        if (!email) {
+          document.getElementById('email-error').textContent = 'L\'email è obbligatoria';
+          hasError = true;
+        } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+          document.getElementById('email-error').textContent = 'Inserisci un\'email valida';
+          hasError = true;
+        }
+        
+        if (!frase) {
+          document.getElementById('frase-error').textContent = 'La citazione è obbligatoria';
+          hasError = true;
+        }
+        
+        if (hasError) return;
+        
+        // Submit form via AJAX
+        try {
+          const formData = new FormData(form);
+          
+          const response = await fetch('/submit', {
+            method: 'POST',
+            body: formData
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            form.classList.add('hidden');
+            responseMessage.classList.remove('hidden');
+            responseMessage.classList.add('success');
+            responseMessage.textContent = result.message;
+          } else {
+            responseMessage.classList.remove('hidden');
+            responseMessage.classList.remove('success');
+            responseMessage.classList.add('error');
+            responseMessage.textContent = result.error || result.message || 'Si è verificato un errore. Riprova più tardi.';
+          }
+        } catch (error) {
+          console.error('Errore:', error);
+          responseMessage.classList.remove('hidden');
+          responseMessage.classList.remove('success');
+          responseMessage.classList.add('error');
+          responseMessage.textContent = 'Si è verificato un errore di connessione. Riprova più tardi.';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

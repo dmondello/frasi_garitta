@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    container_name: frasi_garitta
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./quotes.db:/app/quotes.db
+      - ./quotes_files:/app/quotes_files
+      - ./maintenance_config.json:/app/maintenance_config.json
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+      # Configurazione email - modificare con i propri dati
+      - EMAIL_HOST=smtp.example.com
+      - EMAIL_PORT=587
+      - EMAIL_USER=your_email@example.com
+      - EMAIL_PASSWORD=your_password
+      - EMAIL_FROM=noreply@example.com
+      - SITE_URL=http://localhost:5001
+      # Credenziali admin - modificare per sicurezza
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=password
