@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Invia una Citazione</title>
+  <title>Invia una frase per la Pace</title>
   <style>
     body {
       display: flex;
@@ -12,9 +12,10 @@
       align-items: center;
       min-height: 100vh;
       margin: 0;
-      background: #f5f5f5;
-      font-family: Arial, sans-serif;
+      background: #0050a2;
+      font-family: Open Sans, sans-serif;
       padding: 20px;
+      padding-bottom: 120px; /* Add space for footer */
     }
     
     .container {
@@ -58,7 +59,7 @@
     }
     
     button {
-      background: #333;
+      background: #0c3c7c;
       color: white;
       border: none;
       padding: 0.75rem 1.5rem;
@@ -71,7 +72,7 @@
     }
     
     button:hover {
-      background: #555;
+      background: #0050a2;
     }
     
     .error {
@@ -91,24 +92,167 @@
       display: none;
     }
     
+    /* Checkbox styling */
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+      margin-right: 10px;
+      margin-top: 5px;
+    }
+    
+    .checkbox-label {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      font-weight: normal;
+      flex: 1;
+    }
+    
+    /* Footer styling */
     #footer {
-      margin-top: 2rem;
-      text-align: center;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: calc(100% - 128px);
+      background: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 64px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
     }
-    
-    #footer a {
-      color: #555;
-      text-decoration: none;
+    .footer-logo {
+      height: 70px;
+      margin: 0 1rem;
     }
-    
-    #footer a:hover {
-      text-decoration: underline;
+    .footer-logo.olo-logo-olomedia {
+      height: 44px;
+      position: relative;
+      top: 4px;
+    }
+    #footer-tagline {
+      font-size: 1.5rem;
+      color: #333;
+      margin-left: 1rem;
+      cursor: pointer; /* indica cliccabile */
+      display: flex;
+      align-items: center;
+    }
+    #footer-tagline div {
+      padding: 0 16px;
+    }
+    .olo-text {
+      font-size: 18px;
+      font-style: italic;
+    }
+    .olo-nome-progetto {
+      font-weight: 700;
+      font-size: 28px;
+    }
+
+    /* Media queries for responsiveness */
+    @media (min-width: 1600px) and (max-width: 1919px) {
+      #footer {
+        padding: 1rem 8px;
+        width: calc(100% - 16px);
+      }
+      .footer-logo {
+        height: 56px;
+      }
+      .footer-logo.olo-logo-olomedia {
+        height: 36px;
+      }
+      #footer-tagline {
+        margin-left: 0;
+      }
+      #footer-tagline div {
+        padding: 0 12px;
+      }
+      .olo-text {
+        font-size: 16px;
+      }
+      .olo-nome-progetto {
+        font-size: 24px;
+      }
+    }
+
+    @media (min-width: 1280px) and (max-width: 1599px) {
+      #footer {
+        padding: 1rem 8px;
+        width: calc(100% - 16px);
+      }
+      .footer-logo {
+        height: 46px;
+      }
+      .footer-logo.olo-logo-olomedia {
+        height: 30px;
+      }
+      #footer-tagline {
+        font-size: 15px;
+        margin-left: 0;
+      }
+      #footer-tagline div {
+        padding: 0 12px;
+      }
+      .olo-text {
+        font-size: 16px;
+      }
+      .olo-nome-progetto {
+        font-size: 20px;
+      }
+    }
+
+    @media (min-width: 1024px) and (max-width: 1279px) {
+      #footer {
+        padding: 1rem 0;
+        width: 99%;
+      }
+      .footer-logo {
+        height: 34px;
+        margin: 0 12px;
+      }
+      .footer-logo.olo-logo-olomedia {
+        height: 22px;
+      }
+      #footer-tagline {
+        font-size: 14px;
+        margin-left: 0;
+      }
+      #footer-tagline div {
+        padding: 0 12px;
+      }
+      .olo-text {
+        font-size: 13px;
+      }
+      .olo-nome-progetto {
+        font-size: 16px;
+      }
+    }
+
+    /* Responsive for mobile devices */
+    @media (max-width: 768px) {
+      #footer {
+        flex-direction: column;
+        padding: 1rem 16px;
+        width: calc(100% - 32px);
+      }
+      .olo-column {
+        margin-bottom: 8px;
+      }
+      #footer-tagline {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Invia una Citazione</h1>
+    <h1>Invia una frase per la Pace</h1>
     
     <form id="quote-form">
       <div class="form-group">
@@ -130,9 +274,15 @@
       </div>
       
       <div class="form-group">
-        <label for="frase">La tua citazione</label>
+        <label for="frase">La tua frase per la pace</label>
         <textarea id="frase" name="frase" required></textarea>
         <div class="error" id="frase-error"></div>
+      </div>
+      
+      <div class="form-group checkbox-group">
+        <input type="checkbox" id="privacy-consent" name="privacy-consent" required>
+        <label for="privacy-consent" class="checkbox-label">Autorizzo al trattamento dei dati personali e alla pubblicazione della mia frase per la pace</label>
+        <div class="error" id="privacy-consent-error"></div>
       </div>
       
       <button type="submit">Invia</button>
@@ -141,8 +291,21 @@
     <div id="response-message" class="hidden"></div>
   </div>
   
+  <!-- Footer con loghi e frase/link -->
   <div id="footer">
-    <a href="/">Torna alla pagina principale</a>
+    <div class="olo-column">
+      <img src="logo-rotary-palermo-teatro-del-sole-and-the-magic.png" alt="Logo - Rotary Club Palermo Teatro del Sole - The Magic Of Rotary" class="footer-logo" />
+    </div>
+    <div class="olo-column">
+      <div id="footer-tagline">
+        <div><span class="olo-text">Progetto:</span> <span class="olo-nome-progetto">STELI DI PACE</span></div>
+        <div><span class="olo-text">Anno Rotariano:</span> 2024 / 2025</div>
+        <div><span class="olo-text">Presidente:</span> Dott. Daniele Mondello</div>
+      </div>
+    </div>
+    <div class="olo-column">
+      <img src="logo-olomedia-retina.png" alt="Logo - Olomedia" class="footer-logo olo-logo-olomedia" />
+    </div>
   </div>
   
   <script>
@@ -182,7 +345,13 @@
         }
         
         if (!frase) {
-          document.getElementById('frase-error').textContent = 'La citazione è obbligatoria';
+          document.getElementById('frase-error').textContent = 'La frase per la pace è obbligatoria';
+          hasError = true;
+        }
+        
+        const privacyConsent = document.getElementById('privacy-consent').checked;
+        if (!privacyConsent) {
+          document.getElementById('privacy-consent-error').textContent = 'È necessario accettare l\'autorizzazione';
           hasError = true;
         }
         

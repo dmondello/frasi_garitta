@@ -240,22 +240,16 @@ def confirm_quote():
         return render_template('error.html', message="Token non valido o già utilizzato")
     
     try:
-        # Segna come verificato
+        # Segna come verificato con email_checked = 3
         db.execute(
-            "UPDATE quotes_da_validare SET email_checked = 1 WHERE id = ?",
+            "UPDATE quotes_da_validare SET email_checked = 3 WHERE id = ?",
             (quote['id'],)
         )
         
-        # Sposta nella tabella quotes
+        # Copia nella tabella quotes con validated = 0
         db.execute(
-            "INSERT INTO quotes (text, author, validated) VALUES (?, ?, 1)",
+            "INSERT INTO quotes (text, author, validated) VALUES (?, ?, 0)",
             (quote['frase'], quote['nome_completo'])
-        )
-        
-        # Elimina dalla tabella quotes_da_validare
-        db.execute(
-            "DELETE FROM quotes_da_validare WHERE id = ?",
-            (quote['id'],)
         )
         
         db.commit()

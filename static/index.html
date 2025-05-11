@@ -10,34 +10,41 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      height: calc(100vh - 107px);
       margin: 0;
-      background: #000000; /* sfondo nero */
-      font-family: Arial, sans-serif;
+      background: #0050a2; /* sfondo nero */
+      font-family: Open Sans, sans-serif;
     }
     #quote-box {
       position: relative;
-      padding: 2rem;
+      padding: 2rem 4rem;
       background: #ffffff;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       max-width: 1000px;
       width: 90%;
       text-align: center;
+      font-weight: 700;
     }
     #quote-text {
       font-size: 4rem;
       margin-bottom: 1.5rem;
+      color: #0c3c7c;
+      font-style: italic;
       opacity: 1;
       transform: translateY(0);
       transition: opacity 0.5s ease, transform 0.5s ease;
     }
+    #quote-text::before {
+      content: '"';
+    }
+    #quote-text::after {
+      content: '"';
+    }
     #quote-author {
-      position: absolute;
-      bottom: 1rem;
-      right: 1rem;
-      font-size: 1.25rem;
-      font-style: italic;
+      position: relative;
+      font-size: 1.75rem;
+      text-align: right;
       color: #555;
       opacity: 1;
       transform: translateY(0);
@@ -48,25 +55,128 @@
       position: fixed;
       bottom: 0;
       left: 0;
-      width: 100%;
+      width: calc(100% - 128px);
       background: #ffffff;
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      padding: 1rem 0;
+      padding: 1rem 64px;
       box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
     }
     .footer-logo {
-      height: 60px;
+      height: 70px;
       margin: 0 1rem;
+    }
+    .footer-logo.olo-logo-olomedia {
+      height: 44px;
+      position: relative;
+      top: 4px;
     }
     #footer-tagline {
       font-size: 1.5rem;
-      font-style: italic;
       color: #333;
       margin-left: 1rem;
       cursor: pointer; /* indica cliccabile */
-      text-decoration: underline;
+      /*text-decoration: underline;*/
+      display: flex;
+      align-items: center;
+    }
+    #footer-tagline div {
+      padding: 0 16px;
+    }
+    .olo-text {
+      font-size: 18px;
+      font-style: italic;
+    }
+    .olo-nome-progetto {
+      font-weight: 700;
+      font-size: 28px;
+    }
+    @media (min-width: 1600px) and (max-width: 1919px) {
+      body {
+        height: calc(100vh - 93px);
+      }
+      #footer {
+        padding: 1rem 8px;
+        width: calc(100% - 16px);
+      }
+      .footer-logo {
+        height: 56px;
+      }
+      .footer-logo.olo-logo-olomedia {
+        height: 36px;
+      }
+      #footer-tagline {
+        margin-left: 0;
+      }
+      #footer-tagline div {
+        padding: 0 12px;
+      }
+      .olo-text {
+        font-size: 16px;
+      }
+      .olo-nome-progetto {
+        font-size: 24px;
+      }
+    }
+
+    @media (min-width: 1280px) and (max-width: 1599px) {
+      body {
+        height: calc(100vh - 83px);
+      }
+      #footer {
+        padding: 1rem 8px;
+        width: calc(100% - 16px);
+      }
+      .footer-logo {
+        height: 46px;
+      }
+      .footer-logo.olo-logo-olomedia {
+        height: 30px;
+      }
+      #footer-tagline {
+        font-size: 15px;
+        margin-left: 0;
+      }
+      #footer-tagline div {
+        padding: 0 12px;
+      }
+      .olo-text {
+        font-size: 16px;
+      }
+      .olo-nome-progetto {
+        font-size: 20px;
+      }
+    }
+
+    @media (min-width: 1024px) and (max-width: 1279px) {
+      body {
+        height: calc(100vh - 71px);
+      }
+      #footer {
+        padding: 1rem 0;
+        width: 99%;
+      }
+      .footer-logo {
+        height: 34px;
+        margin: 0 12px;
+      }
+      .footer-logo.olo-logo-olomedia {
+        height: 22px;
+      }
+      #footer-tagline {
+        font-size: 14px;
+        margin-left: 0;
+      }
+      #footer-tagline div {
+        padding: 0 12px;
+      }
+      .olo-text {
+        font-size: 13px;
+      }
+      .olo-nome-progetto {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
@@ -78,13 +188,23 @@
 
   <!-- Footer con loghi e frase/link -->
   <div id="footer">
-    <img src="logo1.png" alt="Logo 1" class="footer-logo" />
-    <img src="logo2.png" alt="Logo 2" class="footer-logo" />
-    <div id="footer-tagline">pensieri in movimento</div>
-    <!-- Link per aggiungere una citazione -->
-    <a href="/submit" style="position: absolute; bottom: 10px; right: 10px; color: #fff; text-decoration: underline;">
-      Aggiungi una citazione
-    </a>
+    <div class="olo-column">
+      <img src="logo-rotary-palermo-teatro-del-sole-and-the-magic.png" alt="Logo - Rotary Club Palermo Teatro del Sole - The Magic Of Rotary" class="footer-logo" />
+    </div>
+    <div class="olo-column">
+      <div id="footer-tagline">
+      <div><span class="olo-text">Progetto:</span> <span class="olo-nome-progetto">STELI DI PACE</span></div>
+      <div><span class="olo-text">Anno Rotariano:</span> 2024 / 2025</div>
+      <div><span class="olo-text">Presidente:</span> Dott. Daniele Mondello</div>
+    </div>
+    </div>
+    <div class="olo-column">
+      <img src="logo-olomedia-retina.png" alt="Logo - Olomedia" class="footer-logo olo-logo-olomedia" />
+    </div>
+    
+    
+    
+    
   </div>
 
   <script>
