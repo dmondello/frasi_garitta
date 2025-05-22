@@ -290,12 +290,57 @@ def admin_dashboard():
         return redirect('/admin')
     
     db = get_db()
+    
+    # Gestione delle citazioni in attesa
     pending_quotes = db.execute(
         "SELECT id, nome_completo, frase, email, email_checked FROM quotes_da_validare"
     ).fetchall()
     
+    # Recupero parametri di filtro e paginazione per le frasi
+    search = request.args.get('search', '')
+    filter_status = request.args.get('filter_status', 'all')
+    page = request.args.get('page', 1, type=int)
+    per_page = 10  # Numero di elementi per pagina
+    
+    # Costruzione della query base con i filtri
+    query = "SELECT id, text, author, validated FROM quotes WHERE 1=1"
+    params = []
+    
+    # Applica filtro di ricerca
+    if search:
+        query += " AND (text LIKE ? OR author LIKE ?)"
+        search_param = f"%{search}%"
+        params.extend([search_param, search_param])
+    
+    # Applica filtro per stato
+    if filter_status == 'validated':
+        query += " AND validated = 1"
+    elif filter_status == 'not_validated':
+        query += " AND validated = 0"
+    
+    # Query per contare il totale dei risultati
+    count_query = query.replace("SELECT id, text, author, validated", "SELECT COUNT(*)")
+    total_count = db.execute(count_query, params).fetchone()[0]
+    
+    # Calcola il numero totale di pagine
+    total_pages = (total_count + per_page - 1) // per_page
+    
+    # Aggiungi ordinamento e paginazione
+    query += " ORDER BY id DESC LIMIT ? OFFSET ?"
+    offset = (page - 1) * per_page
+    params.extend([per_page, offset])
+    
+    # Esegui la query con i filtri e la paginazione
+    quotes_list = db.execute(query, params).fetchall()
+    
     return render_template('admin_dashboard.html', 
                            quotes=pending_quotes, 
+                           quotes_list=quotes_list,
+                           search=search,
+                           filter_status=filter_status,
+                           page=page,
+                           total_pages=total_pages,
+                           total_count=total_count,
                            maintenance_mode=MAINTENANCE_MODE,
                            maintenance_message=MAINTENANCE_MESSAGE)
 
@@ -382,6 +427,91 @@ def admin_reject_quote(quote_id):
     except Exception as e:
         db.rollback()
         app.logger.error(f"Errore rifiuto citazione: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+# API per gestire le frasi nella tabella quotes
+
+# Aggiungi una nuova frase
+@app.route('/admin/quotes/add', methods=['POST'])
+def admin_add_quote():
+    if not session.get('admin_logged_in'):
+        return jsonify({"error": "Accesso non autorizzato"}), 401
+    
+    text = request.form.get('text')
+    author = request.form.get('author')
+    validated = 1 if request.form.get('validated') == 'on' else 0
+    
+    if not text or not author:
+        return jsonify({"error": "Testo e autore sono obbligatori"}), 400
+    
+    db = get_db()
+    
+    try:
+        db.execute(
+            "INSERT INTO quotes (text, author, validated) VALUES (?, ?, ?)",
+            (text, author, validated)
+        )
+        
+        db.commit()
+        
+        return redirect('/admin/dashboard')
+        
+    except Exception as e:
+        db.rollback()
+        app.logger.error(f"Errore aggiunta citazione: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+# Modifica una frase esistente
+@app.route('/admin/quotes/edit/<int:quote_id>', methods=['POST'])
+def admin_edit_quote(quote_id):
+    if not session.get('admin_logged_in'):
+        return jsonify({"error": "Accesso non autorizzato"}), 401
+    
+    text = request.form.get('text')
+    author = request.form.get('author')
+    validated = 1 if request.form.get('validated') == 'on' else 0
+    
+    if not text or not author:
+        return jsonify({"error": "Testo e autore sono obbligatori"}), 400
+    
+    db = get_db()
+    
+    try:
+        db.execute(
+            "UPDATE quotes SET text = ?, author = ?, validated = ? WHERE id = ?",
+            (text, author, validated, quote_id)
+        )
+        
+        db.commit()
+        
+        return redirect('/admin/dashboard')
+        
+    except Exception as e:
+        db.rollback()
+        app.logger.error(f"Errore modifica citazione: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+# Elimina una frase
+@app.route('/admin/quotes/delete/<int:quote_id>', methods=['POST'])
+def admin_delete_quote(quote_id):
+    if not session.get('admin_logged_in'):
+        return jsonify({"error": "Accesso non autorizzato"}), 401
+    
+    db = get_db()
+    
+    try:
+        db.execute(
+            "DELETE FROM quotes WHERE id = ?",
+            (quote_id,)
+        )
+        
+        db.commit()
+        
+        return redirect('/admin/dashboard')
+        
+    except Exception as e:
+        db.rollback()
+        app.logger.error(f"Errore eliminazione citazione: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
