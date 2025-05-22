@@ -35,3 +35,7 @@ Thumbs.db
 # Cache directories
 .cache/
 .temp/
+
+# Database
+.db
+quotes.db
