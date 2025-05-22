@@ -283,6 +283,42 @@ def admin_logout():
     session.pop('admin_logged_in', None)
     return redirect('/admin')
 
+# Admin change password
+@app.route('/admin/change_password', methods=['POST'])
+def admin_change_password():
+    global ADMIN_PASSWORD
+    
+    if not session.get('admin_logged_in'):
+        return redirect('/admin')
+    
+    current_password = request.form.get('current_password')
+    new_password = request.form.get('new_password')
+    confirm_password = request.form.get('confirm_password')
+    
+    # Verifica che la password corrente sia corretta
+    if current_password != ADMIN_PASSWORD:
+        flash('La password corrente non è valida', 'error')
+        return redirect('/admin/dashboard')
+    
+    # Verifica che la nuova password sia valida
+    if not new_password or len(new_password) < 6:
+        flash('La nuova password deve essere di almeno 6 caratteri', 'error')
+        return redirect('/admin/dashboard')
+    
+    # Verifica che le password coincidano
+    if new_password != confirm_password:
+        flash('Le nuove password non coincidono', 'error')
+        return redirect('/admin/dashboard')
+    
+    # Aggiorna la password
+    ADMIN_PASSWORD = new_password
+    
+    # Aggiorna la password nell'ambiente
+    os.environ['ADMIN_PASSWORD'] = new_password
+    
+    flash('Password aggiornata con successo', 'success')
+    return redirect('/admin/dashboard')
+
 # Admin dashboard
 @app.route('/admin/dashboard')
 def admin_dashboard():
